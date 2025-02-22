@@ -484,6 +484,16 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 	pull_package net-tools
 	pull_package patch
 	pull_package unzip
+	pull_package android-tools
+	pull_package mariadb
+	pull_package nodejs
+	pull_package openssl
+	pull_package perl
+	pull_package termux-api
+	pull_package vim
+	pull_package wget
+	pull_package nginx
+	pull_package openssh
 	pull_package jq
 
 	# Handle additional packages.
