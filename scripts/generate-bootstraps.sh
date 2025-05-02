@@ -497,6 +497,7 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 	pull_package jq
 	pull_package libpcreposix
 	pull_package websocat
+	pull_package logrotate
 
 	# Handle additional packages.
 	for add_pkg in "${ADDITIONAL_PACKAGES[@]}"; do
