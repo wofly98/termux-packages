@@ -498,6 +498,7 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 	pull_package libpcreposix
 	pull_package websocat
 	pull_package logrotate
+	pull_package proot
 
 	# Handle additional packages.
 	for add_pkg in "${ADDITIONAL_PACKAGES[@]}"; do
