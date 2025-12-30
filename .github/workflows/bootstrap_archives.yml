@@ -1,8 +1,12 @@
 name: Generate bootstrap archives
 
 on:
-  schedule:
-    - cron: "0 0 * * 0"
+#  schedule:
+#    - cron: "0 0 * * 0"
+  push:                  # 当推送代码时触发
+    branches:            # 可选：只在指定分支触发（推荐限制到 main 或 master）
+      - main
+      - master
   workflow_dispatch:
 
 permissions: {} # none
