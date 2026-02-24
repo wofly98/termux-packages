@@ -1,4 +1,4 @@
-name: Generate bootstrap archives
+name: Generate bootstrap archives from source
 
 on:
   workflow_dispatch:
