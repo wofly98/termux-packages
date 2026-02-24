@@ -19,12 +19,12 @@ index a27f8da..0709860 100644
 +++ b/ogginfo/codec_skeleton.c
 @@ -25,6 +25,7 @@
  #include <ogg/ogg.h>
- 
+
  #include "i18n.h"
 +#include "utf8.h"
- 
+
  #include "private.h"
- 
--- 
+
+--
 GitLab
 

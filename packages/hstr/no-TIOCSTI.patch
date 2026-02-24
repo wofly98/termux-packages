@@ -3,7 +3,7 @@ https://github.com/termux/termux-packages/issues/14160
 --- a/src/hstr_utils.c
 +++ b/src/hstr_utils.c
 @@ -113,7 +113,7 @@
- 
+
  bool is_tiocsti_supported(void)
  {
 -#if defined(__MS_WSL__) || defined(__CYGWIN__)
@@ -14,7 +14,7 @@ https://github.com/termux/termux-packages/issues/14160
 @@ -143,7 +143,7 @@
  #endif
  }
- 
+
 -#if !defined(__MS_WSL__) && !defined(__CYGWIN__)
 +#if !defined(__MS_WSL__) && !defined(__CYGWIN__) && !defined(__ANDROID__)
  void tiocsti(void)

@@ -17,13 +17,13 @@ https://github.com/termux/termux-packages/issues/15852
 @@ -51,6 +51,12 @@
  #include <string.h>
  #include <unistd.h>
- 
+
 +#ifdef __ANDROID__
 +# if !HAVE_SYSTEM_RESOLVER
 +#  error HAVE_SYSTEM_RESOLVER must be true on Android
 +# endif
 +int dn_skipname(const unsigned char *, const unsigned char *);
 +#endif
- 
+
  /* William Ahern's DNS library, included as a source copy.  */
  #ifdef USE_LIBDNS

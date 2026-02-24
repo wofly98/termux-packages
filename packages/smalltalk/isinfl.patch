@@ -5,7 +5,7 @@ https://github.com/termux/termux-packages/issues/15852
 @@ -40,6 +40,11 @@
  #include <math.h>
  #include <stddef.h>
- 
+
 +#ifdef __ANDROID__
 +#define isinfl(x) __builtin_isinf(x)
 +#define isnanl(x) __builtin_isnan(x)

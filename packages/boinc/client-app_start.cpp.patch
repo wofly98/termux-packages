@@ -1,14 +1,14 @@
 --- a/client/app_start.cpp
 +++ b/client/app_start.cpp
 @@ -81,6 +81,10 @@
- 
+
  #include "app.h"
- 
+
 +#ifdef __ANDROID__
 +#include <stdlib.h> // getenv(), setenv(), unsetenv()
 +char helper_path[] = "@TERMUX_PREFIX@/bin/proot";
 +#endif
- 
+
  #ifdef _WIN32
  // Dynamically link to these functions at runtime;
 @@ -1125,6 +1129,49 @@
@@ -64,7 +64,7 @@
 @@ -1147,6 +1194,17 @@
          );
      }
- 
+
 +#ifdef __ANDROID__
 +    // get debug info from client not from forked task
 +#if defined(__aarch64__) || defined(__arm__)

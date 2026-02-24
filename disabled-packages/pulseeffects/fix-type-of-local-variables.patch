@@ -17,14 +17,14 @@ index 3d39701ae..d8b6ce7d3 100644
 --- a/src/pipeline_base.cpp
 +++ b/src/pipeline_base.cpp
 @@ -116,8 +116,8 @@ void on_message_state_changed(const GstBus* gst_bus, GstMessage* message, Pipeli
- 
+
  void on_message_latency(const GstBus* gst_bus, GstMessage* message, PipelineBase* pb) {
    if (std::strcmp(GST_OBJECT_NAME(message->src), "source") == 0) {
 -    int latency = 0;
 -    int buffer = 0;
 +    pa_usec_t latency = 0;
 +    pa_usec_t buffer = 0;
- 
+
      g_object_get(pb->source, "latency-time", &latency, nullptr);
      g_object_get(pb->source, "buffer-time", &buffer, nullptr);
 @@ -125,8 +125,8 @@ void on_message_latency(const GstBus* gst_bus, GstMessage* message, PipelineBase
@@ -35,6 +35,6 @@ index 3d39701ae..d8b6ce7d3 100644
 -    int buffer = 0;
 +    pa_usec_t latency = 0;
 +    pa_usec_t buffer = 0;
- 
+
      g_object_get(pb->sink, "latency-time", &latency, nullptr);
      g_object_get(pb->sink, "buffer-time", &buffer, nullptr);

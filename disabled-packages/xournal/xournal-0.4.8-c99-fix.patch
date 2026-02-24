@@ -15,7 +15,7 @@ Date:   Sun Jan 24 15:48:16 2021 -0500
 @@ -44,6 +44,10 @@
   *
   */
- 
+
 +#ifdef HAVE_CONFIG_H
 +#  include <config.h>
 +#endif
@@ -28,7 +28,7 @@ Date:   Sun Jan 24 15:48:16 2021 -0500
 @@ -43,6 +43,10 @@
   * @version 1.0
   */
- 
+
 +#ifdef HAVE_CONFIG_H
 +#  include <config.h>
 +#endif
@@ -41,7 +41,7 @@ Date:   Sun Jan 24 15:48:16 2021 -0500
 @@ -44,6 +44,10 @@
   *
   */
- 
+
 +#ifdef HAVE_CONFIG_H
 +#  include <config.h>
 +#endif
@@ -60,6 +60,6 @@ Add missing include directives for make_dashed, set_cursor_busy.
  #include "xo-misc.h"
 +#include "xo-selection.h"
 +#include "xo-paint.h"
- 
+
  // create pixbuf from buffer, or return NULL on failure
  GdkPixbuf *pixbuf_from_buffer(const gchar *buf, gsize buflen)

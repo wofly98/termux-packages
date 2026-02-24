@@ -13,7 +13,7 @@ https://github.com/termux/termux-packages/issues/15852
 --- a/configure.ac
 +++ b/configure.ac
 @@ -221,7 +221,8 @@
- 
+
  AC_MSG_CHECKING([for __progname])
  AC_LINK_IFELSE(
 -	[AC_LANG_PROGRAM([[extern char *__progname;]],

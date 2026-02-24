@@ -7,9 +7,9 @@ diff -u -r ../util-linux-2.40.2/configure ./configure
 --- ../util-linux-2.40.2/configure	2024-07-04 08:01:06.791975965 +0000
 +++ ./configure	2024-09-22 10:43:46.010626256 +0000
 @@ -39078,49 +39078,6 @@
- 
- 
- 
+
+
+
 -  if test "x$build_col" != xno; then
 -
 -    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking building for glibc" >&5

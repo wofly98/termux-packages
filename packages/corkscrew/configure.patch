@@ -5,7 +5,7 @@ https://github.com/termux/termux-packages/issues/15852
 @@ -906,7 +906,7 @@
  #line 907 "configure"
  #include "confdefs.h"
- 
+
 -main(){return(0);}
 +int main(){return(0);}
  EOF
@@ -14,7 +14,7 @@ https://github.com/termux/termux-packages/issues/15852
 @@ -1450,7 +1450,7 @@
  #line 1451 "configure"
  #include "confdefs.h"
- 
+
 -main(){return(0);}
 +int main(){return(0);}
  EOF

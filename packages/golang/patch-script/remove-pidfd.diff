@@ -21,7 +21,7 @@ index 12434cb..da527f9 100644
  	GetPollFDAndNetwork = getPollFDAndNetwork
 -	CheckPidfdOnce      = checkPidfdOnce
  )
- 
+
  const StatusDone = statusDone
 diff --git a/src/os/export_pidfd_test.go b/src/os/export_pidfd_test.go
 new file mode 100644
@@ -45,7 +45,7 @@ index 0bfef77..e3c6674 100644
 @@ -2,6 +2,8 @@
  // Use of this source code is governed by a BSD-style
  // license that can be found in the LICENSE file.
- 
+
 +//go:build linux && !android
 +
  // Support for pidfd was added during the course of a few Linux releases:
@@ -58,9 +58,9 @@ index 0bfef77..e3c6674 100644
 +//
 +// On Android systems the pidfd_open call reportedly triggers a SIGSYS signal,
 +// (issue #69065), so don't use pidfd on Android.
- 
+
  package os
- 
+
 diff --git a/src/os/pidfd_linux_test.go b/src/os/pidfd_linux_test.go
 index c1f41d0..f49ac81 100644
 --- a/src/os/pidfd_linux_test.go
@@ -68,11 +68,11 @@ index c1f41d0..f49ac81 100644
 @@ -2,6 +2,8 @@
  // Use of this source code is governed by a BSD-style
  // license that can be found in the LICENSE file.
- 
+
 +//go:build linux && !android
 +
  package os_test
- 
+
  import (
 diff --git a/src/os/pidfd_other.go b/src/os/pidfd_other.go
 index ba9cbcb..78e09fb 100644
@@ -81,9 +81,9 @@ index ba9cbcb..78e09fb 100644
 @@ -2,7 +2,7 @@
  // Use of this source code is governed by a BSD-style
  // license that can be found in the LICENSE file.
- 
+
 -//go:build (unix && !linux) || (js && wasm) || wasip1 || windows
 +//go:build (unix && (android || !linux)) || (js && wasm) || wasip1 || windows
- 
+
  package os
- 
+

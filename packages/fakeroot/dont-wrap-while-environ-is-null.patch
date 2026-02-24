@@ -5,7 +5,7 @@ Workaround for https://github.com/termux/termux-packages/issues/3148.
 @@ -699,6 +699,22 @@ int WRAP_FSTAT FSTAT_ARG(int ver,
  			int fd,
  			struct stat *st){
- 
+
 +#ifdef __ANDROID__
 +  static int initialized = 0;
 +  if (!initialized) {
@@ -22,6 +22,6 @@ Workaround for https://github.com/termux/termux-packages/issues/3148.
 +    }
 +  }
 +#endif
- 
+
    int r;
- 
+

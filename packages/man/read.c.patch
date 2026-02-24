@@ -5,7 +5,7 @@ https://github.com/termux/termux-packages/issues/16476
 @@ -445,6 +445,11 @@
  		return -1;
  	}
- 
+
 +	if (S_ISCHR(st.st_mode) || S_ISBLK(st.st_mode)) {
 +		mandoc_msg(MANDOCERR_BADARG_BAD, 0, 0, "%s", strerror(EINVAL));
 +		return -1;

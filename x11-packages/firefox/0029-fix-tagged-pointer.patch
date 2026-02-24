@@ -4,7 +4,7 @@ https://github.com/termux/termux-packages/issues/22907
 +++ b/layout/generic/IntrinsicISizesCache.h
 @@ -131,25 +131,14 @@
    };
- 
+
    // If the high bit of mOutOfLine is 1, then it points to an OutOfLineCache.
 +  bool mIsOutOfLine = false;
    union {
@@ -17,7 +17,7 @@ https://github.com/termux/termux-packages/issues/22907
 -    };
 +    uintptr_t mOutOfLine = 0;
    };
- 
+
 -  static constexpr uintptr_t kHighBit = uintptr_t(1)
 -                                        << (sizeof(void*) * CHAR_BIT - 1);
 -
@@ -57,9 +57,9 @@ https://github.com/termux/termux-packages/issues/22907
 -#endif
    }
  };
- 
+
 -static_assert(sizeof(IntrinsicISizesCache) == 8, "Unexpected cache size");
 -
  }  // namespace mozilla
- 
+
  #endif

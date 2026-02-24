@@ -9,5 +9,5 @@ https://github.com/termux/termux-packages/issues/13590
 -    return FieldId(knownField, nullptr, 0);
 +    return FieldId(knownField, denotation.data(), denotation.size());
  }
- 
+
  FieldId FieldId::fromTrackDenotation(std::string_view denotation)

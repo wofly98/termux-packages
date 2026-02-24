@@ -5,7 +5,7 @@ https://github.com/termux/termux-packages/issues/18954
 @@ -75,6 +75,23 @@
  #include <math.h>
  #include <sys/time.h>
- 
+
 +#ifdef __TERMUX__
 +#include <android/fdsan.h>
 +#include <dlfcn.h>
@@ -29,7 +29,7 @@ https://github.com/termux/termux-packages/issues/18954
 @@ -2474,6 +2491,10 @@
  {
  	int list_plugins = 0;
- 
+
 +#ifdef __TERMUX__
 +	termux_disable_fdsan();
 +#endif

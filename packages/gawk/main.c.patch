@@ -4,7 +4,7 @@ diff -u -r ../gawk-4.2.1/main.c ./main.c
 @@ -246,10 +246,12 @@
  	if ((cp = getenv("GAWK_LOCALE_DIR")) != NULL)
  		locale_dir = cp;
- 
+
 -#if defined(F_GETFL) && defined(O_APPEND)
 +#if defined(F_GETFL) && defined(O_APPEND) && !defined(__ANDROID__)
  	// 1/2018: This is needed on modern BSD systems so that the

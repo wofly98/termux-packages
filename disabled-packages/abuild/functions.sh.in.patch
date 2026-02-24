@@ -2,7 +2,7 @@ diff -uNr abuild-3.4.0/functions.sh.in abuild-3.4.0.mod/functions.sh.in
 --- abuild-3.4.0/functions.sh.in	2019-06-14 15:13:23.000000000 +0300
 +++ abuild-3.4.0.mod/functions.sh.in	2019-07-21 17:00:19.730135313 +0300
 @@ -5,40 +5,20 @@
- 
+
  arch_to_hostspec() {
  	case "$1" in
 -	aarch64)	echo "aarch64-alpine-linux-musl" ;;
@@ -26,7 +26,7 @@ diff -uNr abuild-3.4.0/functions.sh.in abuild-3.4.0.mod/functions.sh.in
  	*)		echo "unknown" ;;
  	esac
  }
- 
+
  hostspec_to_arch() {
  	case "$1" in
 -	aarch64*-*-*-*)		echo "aarch64" ;;
@@ -53,7 +53,7 @@ diff -uNr abuild-3.4.0/functions.sh.in abuild-3.4.0.mod/functions.sh.in
 @@ -114,7 +94,7 @@
  	PACKAGER=${_PACKAGER-$PACKAGER}
  	USE_COLORS=${_USE_COLORS-$USE_COLORS}
- 
+
 -	[ -z "$CBUILD" ] && CBUILD="$(gcc -dumpmachine)"
 +	[ -z "$CBUILD" ] && CBUILD="$(clang -dumpmachine)"
  	[ -z "$CHOST" ] && CHOST="$CBUILD"

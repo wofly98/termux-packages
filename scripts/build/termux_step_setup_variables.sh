@@ -84,6 +84,7 @@ termux_step_setup_variables() {
 
 	if [ "$TERMUX_PACKAGE_LIBRARY" = "bionic" ]; then
 		if [ "$TERMUX_ON_DEVICE_BUILD" = "false" ] && [ ! -d "$NDK" ]; then
+			echo "DEBUG: NDK='$NDK'"
 			termux_error_exit 'NDK not pointing at a directory!'
 		fi
 

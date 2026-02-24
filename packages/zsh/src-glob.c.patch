@@ -17,7 +17,7 @@ diff -u -r zsh-5.8/Src/glob.c zsh-5.8.mod/Src/glob.c
 -	DIR *lock = opendir(fn);
  	char *subdirs = NULL;
  	int subdirlen = 0;
- 
+
 -	if (lock == NULL)
 +	/* First check for search permission. */
 +	if (access(fn, X_OK) != 0)
@@ -82,7 +82,7 @@ diff -u -r zsh-5.8/Src/glob.c zsh-5.8.mod/Src/glob.c
 -		    int l;
 +		    if (dirs) {
 +			int l;
- 
+
 -		    /*
 -		     * If not the last component in the path:
 -		     *
@@ -198,4 +198,4 @@ diff -u -r zsh-5.8/Src/glob.c zsh-5.8.mod/Src/glob.c
 -	closedir(lock);
  	if (subdirs) {
  	    int oppos = pathpos;
- 
+

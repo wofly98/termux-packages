@@ -1,0 +1,16 @@
+--- a/vendor/core/libcutils/iosched_policy.cpp
++++ b/vendor/core/libcutils/iosched_policy.cpp
+@@ -24,7 +24,12 @@
+ #include <unistd.h>
+
+ #if defined(__ANDROID__)
+-#include <linux/ioprio.h>
++#if !defined(IOPRIO_WHO_PROCESS)
++#define IOPRIO_WHO_PROCESS 1
++#endif
++#if !defined(IOPRIO_CLASS_SHIFT)
++#define IOPRIO_CLASS_SHIFT 13
++#endif
+ #include <sys/syscall.h>
+ #define __android_unused
+ #else

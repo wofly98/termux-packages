@@ -9,5 +9,5 @@ https://github.com/termux/termux-packages/issues/15852
 +#else
 +#include <sys/wait.h>
  #endif
- 
+
  #include <fcntl.h>

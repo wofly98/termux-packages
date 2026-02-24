@@ -3,7 +3,7 @@ https://github.com/termux/termux-packages/issues/15929
 --- a/awk.h
 +++ b/awk.h
 @@ -80,6 +80,11 @@
- 
+
  #ifdef STDC_HEADERS
  #include <stdlib.h>
 +#if defined __ANDROID__ && defined __TERMUX__
@@ -12,8 +12,8 @@ https://github.com/termux/termux-packages/issues/15929
 +size_t __ctype_get_mb_cur_max(void);
 +#endif
  #endif	/* not STDC_HEADERS */
- 
- 
+
+
 --- a/support/localeinfo.c
 +++ b/support/localeinfo.c
 @@ -28,6 +28,11 @@
@@ -27,7 +27,7 @@ https://github.com/termux/termux-packages/issues/15929
 +#endif
  #include <string.h>
  #include <wctype.h>
- 
+
 --- a/support/regex_internal.h
 +++ b/support/regex_internal.h
 @@ -23,6 +23,11 @@
@@ -40,14 +40,14 @@ https://github.com/termux/termux-packages/issues/15929
 +size_t __ctype_get_mb_cur_max(void);
 +#endif
  #include <string.h>
- 
+
  #include <langinfo.h>
 --- a/main.c
 +++ b/main.c
 @@ -30,6 +30,15 @@
  #include "awk.h"
  #include "getopt.h"
- 
+
 +#ifdef __ANDROID__
 +static __inline__ char *setlocale_(int category, const char *locale_name) {
 +	return setlocale(category, locale_name);
@@ -77,9 +77,9 @@ https://github.com/termux/termux-packages/issues/15929
 +	else
 +		setlocale_(LC_CTYPE, "C.UTF-8");
 +#endif
- 
+
  	myname = gawk_name(argv[0]);
- 
+
 @@ -384,7 +406,7 @@
  		else {
  			gawk_mb_cur_max = 1;	/* hands off my data! */

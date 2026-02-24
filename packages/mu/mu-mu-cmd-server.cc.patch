@@ -9,5 +9,5 @@ https://github.com/termux/termux-packages/issues/16191
 -		::printf(COOKIE_PRE "%x" COOKIE_POST, num);
 +		::printf("%s%x%s", COOKIE_PRE, num, COOKIE_POST);
  }
- 
+
  static void

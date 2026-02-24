@@ -20,7 +20,7 @@ https://github.com/termux/termux-packages/issues/15852
  {
 @@ -20093,6 +20095,7 @@
  #include "confdefs.h"
- 
+
  #include <stdlib.h>
 +#include <wchar.h>
  int
@@ -69,7 +69,7 @@ https://github.com/termux/termux-packages/issues/15852
 @@ -27618,6 +27626,7 @@
  #line 27618 "configure"
  #include "confdefs.h"
- 
+
 +#include <stdio.h>
  #if HAVE_TERMIO_H
  #include <termio.h>

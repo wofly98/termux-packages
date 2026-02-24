@@ -12,7 +12,7 @@ return types.
  #pragma hdrstop
  #include <stdarg.h>
 +#include <stdlib.h>
- 
+
  int main(int argc, char **argv)
  {
 @@ -3279,6 +3280,7 @@
@@ -37,16 +37,16 @@ return types.
  #	include <stdlib.h>
  #endif
 +#include <string.h>
- 
+
  #ifdef HAVE_NCURSES_H
  #	define NCURSES_OPAQUE 0
 @@ -5175,7 +5178,8 @@
  #	include <curses.h>
  #endif
- 
-- 
+
+-
 +
-+int  
++int
  main(int argc, char **argv)
  {
  	/* Note:  don't actually call curses, since it may block;

@@ -59,6 +59,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DLSTAT_FOLLOWS_SLASHED_SYMLINK_EXITCODE=0
 -DMASK_LONGDOUBLE_EXITCODE=1
 -DINSTALL_SYSCONFDIR=$TERMUX_PREFIX/etc
+-DCURSES_LIBRARY=$TERMUX_PREFIX/lib/libncurses.so
+-DCURSES_INCLUDE_PATH=$TERMUX_PREFIX/include
 "
 TERMUX_PKG_RM_AFTER_INSTALL="
 bin/rcmysql
@@ -85,6 +87,12 @@ termux_step_pre_configure() {
 	if $TERMUX_ON_DEVICE_BUILD; then
 		termux_error_exit "Package '$TERMUX_PKG_NAME' is not safe for on-device builds."
 	fi
+
+	echo "DEBUG: CFLAGS=$CFLAGS"
+	echo "DEBUG: LDFLAGS=$LDFLAGS"
+	echo "DEBUG: PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-}"
+	echo "DEBUG: Searching for libncurses:"
+	find $TERMUX_PREFIX/lib -name "libncurses.so" | head -n 10 || echo "Not found"
 
 	CPPFLAGS+=" -Dushort=u_short"
 

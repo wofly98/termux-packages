@@ -15,7 +15,7 @@ https://github.com/termux/termux-packages/issues/15852
                                   const gchar* val,
 @@ -941,8 +941,8 @@
  }
- 
+
  static void
 -___lambda25__gh_func (gconstpointer key,
 -                      gconstpointer value,
@@ -39,7 +39,7 @@ https://github.com/termux/termux-packages/issues/15852
  void history_unref (gpointer instance);
 @@ -1201,8 +1201,8 @@
  }
- 
+
  static void
 -___lambda91__gh_func (gconstpointer key,
 -                      gconstpointer value,

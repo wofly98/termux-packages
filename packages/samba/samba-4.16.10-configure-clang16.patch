@@ -31,7 +31,7 @@ index e2a078bd3a0..cfdceea14ca 100644
          linkflags = []
          if version_script:
              script = bld.srcnode.make_node('ldscript')
--- 
+--
 GitLab
 
 
@@ -60,19 +60,19 @@ index 22be17a1a6f..ca27deaa543 100644
 +++ b/source3/wscript
 @@ -603,11 +603,11 @@ msg.msg_accrightslen = sizeof(fd);
      conf.CHECK_HEADERS('asm/types.h')
- 
+
      conf.CHECK_CODE('dev_t dev; int i = major(dev); return 0', "HAVE_DEVICE_MAJOR_FN",
 -                    headers='unistd.h sys/types.h',
 +                    headers='sys/sysmacros.h unistd.h sys/types.h',
                      msg="Checking for major macro")
- 
+
      conf.CHECK_CODE('dev_t dev; int i = minor(dev); return 0', "HAVE_DEVICE_MINOR_FN",
 -                    headers='unistd.h sys/types.h',
 +                    headers='sys/sysmacros.h unistd.h sys/types.h',
                      msg="Checking for minor macro")
- 
+
      conf.CHECK_STRUCTURE_MEMBER('struct dirent', 'd_off',
--- 
+--
 GitLab
 
 
@@ -94,7 +94,7 @@ index ca27deaa543..e77cd127e60 100644
 --- a/source3/wscript
 +++ b/source3/wscript
 @@ -1314,7 +1314,7 @@ syscall(SYS_initgroups, 16, NULL, NULL, 0);
- 
+
      if conf.CHECK_CODE('''
  #include <time.h>
 -main() {
@@ -116,11 +116,11 @@ index ca27deaa543..e77cd127e60 100644
  #include <limits.h>
  #include <signal.h>
 +#include <stdlib.h>
- 
+
  void exit_on_core(int ignored) {
          exit(1);
  }
- 
+
 -main() {
 +int main() {
          char *newpath;
@@ -137,7 +137,7 @@ index ca27deaa543..e77cd127e60 100644
 +        return s != NULL ?  0 : 1;
  }''', 'GETCWD_TAKES_NULL', addmain=False, execute=True,
          msg="getcwd takes a NULL argument")
- 
--- 
+
+--
 GitLab
 

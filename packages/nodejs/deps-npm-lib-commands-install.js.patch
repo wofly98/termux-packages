@@ -17,5 +17,5 @@
 +        throw e
 +      }
      }
- 
+
      // don't try to install the prefix into itself

@@ -32,7 +32,7 @@ index 97ab9e7a1..c9fcede6a 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -220,7 +220,7 @@ AC_MINIX
- 
+
  # catch -Werror and similar options when running configure
  AC_TRY_COMPILE([#include <stdio.h>],
 -[int i; static j; int *p; char *c;

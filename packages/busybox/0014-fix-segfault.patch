@@ -10,6 +10,6 @@ https://github.com/termux/termux-packages/issues/21522
 +# undef BB_GLOBAL_CONST
 +# define BB_GLOBAL_CONST
 +#endif
- 
+
  #if defined(errno)
  /* If errno is a define, assume it's "define errno (*__errno_location())"

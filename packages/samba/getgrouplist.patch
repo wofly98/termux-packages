@@ -11,5 +11,5 @@ https://github.com/termux/termux-packages/issues/15852
 +int getgrouplist(const char *, gid_t, gid_t *, int *);
 +#endif
  #endif /* HAVE_GETGROUPLIST */
- 
+
  static int sys_getgrouplist(const char *user, gid_t gid, gid_t *groups, int *grpcnt)

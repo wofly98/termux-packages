@@ -12,7 +12,7 @@ https://bugs.gentoo.org/871249
  #include <aalib.h>
 @@ -59,4 +60,5 @@
  static char *graph_mem;
- 
+
 +int f_getkey(void);
- 
+
  static void dcd_color_64( char *data ) {

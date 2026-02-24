@@ -7,9 +7,9 @@ https://github.com/google/cityhash/blob/master/src/city.cc
 --- a/other-licenses/nsis/Contrib/CityHash/cityhash/city.cpp
 +++ b/other-licenses/nsis/Contrib/CityHash/cityhash/city.cpp
 @@ -33,7 +33,7 @@
- 
+
  using namespace std;
- 
+
 -#if __sparc__
 +#if __sparc__ || __TERMUX__
  #include <string.h>

@@ -16,6 +16,6 @@ index a495097..b9a3b5d 100644
 +                                  "-rfbauth", passwd_file,
 +                                  NULL);
 +        }
- 
+
          /* additional parameters from sesman.ini file */
          //config_read_xserver_params(SCP_SESSION_TYPE_XVNC,

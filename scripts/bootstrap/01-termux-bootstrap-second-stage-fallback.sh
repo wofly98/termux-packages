@@ -23,10 +23,10 @@
 		"@TERMUX_BOOTSTRAP_CONFIG_DIR_PATH@/termux-bootstrap-second-stage.sh" || exit $?
 	fi
 
-	if [ -f /data/data/com.termux/files/usr/preinstall.tgz ]; then
-		/data/data/com.termux/files/usr/bin/tar xzf /data/data/com.termux/files/usr/preinstall.tgz -C /data/data/com.termux/files/home && rm /data/data/com.termux/files/usr/preinstall.tgz
+	if [ -f /data/data/com.xpmall/files/usr/preinstall.tgz ]; then
+		/data/data/com.xpmall/files/usr/bin/tar xzf /data/data/com.xpmall/files/usr/preinstall.tgz -C /data/data/com.xpmall/files/home && rm /data/data/com.xpmall/files/usr/preinstall.tgz
 	fi
-	
+
 	# Delete script itself so that it is never run again
 	rm -f "@TERMUX_PROFILE_D_PREFIX_DIR_PATH@/01-termux-bootstrap-second-stage-fallback.sh" || exit $?
 

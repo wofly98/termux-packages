@@ -20,5 +20,5 @@ index 9835273..2d10d57 100644
  #include <signal.h>
 +#include <time.h>
  #include <limits.h>
- 
+
  #include <pulse/pulseaudio.h>

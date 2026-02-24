@@ -8,7 +8,7 @@ diff -u -r ../daemonize-release-1.7.7/daemonize.c ./daemonize.c
 +#include <grp.h> /* For initgroups(3). */
  #include "config.h"
  #include "version.h"
- 
+
 @@ -38,7 +39,10 @@
  static bool         be_verbose = FALSE;
  static const char  *user       = NULL;

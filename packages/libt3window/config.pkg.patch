@@ -7,6 +7,6 @@ https://github.com/termux/termux-packages/issues/15852
  #include <stdlib.h>
  #include <curses.h>
 +#include <term.h>
- 
+
  int main(int argc, char *argv[]) {
  	int args[9], error, fd;

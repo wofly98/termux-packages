@@ -6,7 +6,7 @@ https://github.com/meganz/MEGAcmd/issues/395
 @@ -16,6 +16,13 @@
   * program.
   */
- 
+
 +#ifdef HAVE_CONFIG_H
 +#include "mega/config.h"
 +#endif
@@ -16,4 +16,4 @@ https://github.com/meganz/MEGAcmd/issues/395
 +
  #ifndef MEGACMDCOMMONUTILS_H
  #define MEGACMDCOMMONUTILS_H
- 
+

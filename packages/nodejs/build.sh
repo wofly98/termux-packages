@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="Open Source, cross-platform JavaScript runtime environme
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="Yaksh Bariya <thunder-coding@termux.dev>"
 TERMUX_PKG_VERSION=23.6.1
-TERMUX_PKG_SRCURL=https://nodejs.org/dist/v${TERMUX_PKG_VERSION}/node-v${TERMUX_PKG_VERSION}.tar.xz
+TERMUX_PKG_SRCURL=file:///tmp/node-v23.6.1.tar.xz
 TERMUX_PKG_SHA256=fefa49dede8733018ada4e30f885808cc4e22167b8ae3233c6d6a23737aff76f
 # thunder-coding: don't try to autoupdate nodejs, that thing takes 2 whole hours to build for a single arch, and requires a lot of patch updates everytime. Also I run tests everytime I update it to ensure least bugs
 TERMUX_PKG_AUTO_UPDATE=false
@@ -21,15 +21,19 @@ TERMUX_PKG_HOSTBUILD=true
 
 termux_step_post_get_source() {
 	# Prevent caching of host build:
-	rm -Rf $TERMUX_PKG_HOSTBUILD_DIR
+	# rm -Rf $TERMUX_PKG_HOSTBUILD_DIR
+	echo "Skipping removal of host build dir to prevent race conditions"
 }
 
 termux_step_host_build() {
+	unset CPLUS_INCLUDE_PATH C_INCLUDE_PATH PKG_CONFIG_PATH PKG_CONFIG_LIBDIR
+	unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+
 	local ICU_VERSION=76.1
 	local ICU_TAR=icu4c-${ICU_VERSION//./_}-src.tgz
 	local ICU_DOWNLOAD=https://github.com/unicode-org/icu/releases/download/release-${ICU_VERSION//./-}/$ICU_TAR
 	termux_download \
-		$ICU_DOWNLOAD\
+		$ICU_DOWNLOAD \
 		$TERMUX_PKG_CACHEDIR/$ICU_TAR \
 		dfacb46bfe4747410472ce3e1144bf28a102feeaa4e3875bac9b4c6cf30f4f3e
 	tar xf $TERMUX_PKG_CACHEDIR/$ICU_TAR
@@ -44,7 +48,7 @@ termux_step_host_build() {
 			--disable-samples \
 			--disable-tests
 	fi
-	make -j $TERMUX_PKG_MAKE_PROCESSES install
+	make -j 1 install
 }
 
 termux_step_pre_configure() {
@@ -70,6 +74,10 @@ termux_step_configure() {
 	export CXX_host=g++
 	export LINK_host=g++
 
+	# Prepend bundled abseil-cpp include path to ensure it takes precedence over
+	# system-installed absl headers (which might be incompatible).
+	export CXXFLAGS="-I$TERMUX_PKG_SRCDIR/deps/v8/third_party/abseil-cpp $CXXFLAGS"
+
 	LDFLAGS+=" -ldl"
 	# See note above TERMUX_PKG_DEPENDS why we do not use a shared libuv.
 	# When building with ninja, build.ninja is generated for both Debug and Release builds.
@@ -94,12 +102,32 @@ termux_step_configure() {
 		-e "s|-licudata||g" \
 		$TERMUX_PKG_SRCDIR/out/{Release,Debug}/obj.host/node_js2c.ninja
 	sed -i \
+		-e "s|\-L${TERMUX_PREFIX}${TERMUX_PREFIX}/lib|-L$TERMUX_PKG_HOSTBUILD_DIR/icu-installed/lib|g" \
+		-e "s|\-I${TERMUX_PREFIX}${TERMUX_PREFIX}/include|-I$TERMUX_PKG_HOSTBUILD_DIR/icu-installed/include|g" \
 		-e "s|\-I$TERMUX_PREFIX/include|-I$TERMUX_PKG_HOSTBUILD_DIR/icu-installed/include|g" \
 		-e "s|\-L$TERMUX_PREFIX/lib|-L$TERMUX_PKG_HOSTBUILD_DIR/icu-installed/lib|g" \
 		$(find $TERMUX_PKG_SRCDIR/out/{Release,Debug}/obj.host -name '*.ninja')
+
+	# Fix target build abseil header conflict: remove system include path from v8_abseil.ninja
+	# so it strictly uses the bundled abseil headers.
+	find $TERMUX_PKG_SRCDIR/out/{Release,Debug}/obj -name 'v8_abseil.ninja' | xargs -r sed -i \
+		-e "s|\-I$TERMUX_PREFIX/include||g"
+
+	# Fix C++20 std::strong_ordering comparison issue in absl/time/time.h (NDK r23c libc++ issue)
+	sed -i 's/#ifdef __cpp_impl_three_way_comparison/#if 0/g' \
+		$TERMUX_PKG_SRCDIR/deps/v8/third_party/abseil-cpp/absl/time/time.h
 }
 
 termux_step_make() {
+	# Unset these to ensure the host build (which uses gcc) doesn't pick up
+	# expected target headers from the environment.
+	echo "DEBUG: Environment before unset:"
+	env | grep -iE "include|flags|path"
+	unset CPLUS_INCLUDE_PATH C_INCLUDE_PATH PKG_CONFIG_PATH PKG_CONFIG_LIBDIR CPATH OBJC_INCLUDE_PATH
+	unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+	echo "DEBUG: Environment after unset:"
+	env | grep -iE "include|flags|path"
+
 	if [ "${TERMUX_DEBUG_BUILD}" = "true" ]; then
 		ninja -C out/Debug -j "${TERMUX_PKG_MAKE_PROCESSES}"
 	else

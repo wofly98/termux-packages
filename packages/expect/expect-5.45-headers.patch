@@ -10,7 +10,7 @@ https://sourceforge.net/tracker/?func=detail&aid=3071706&group_id=13179&atid=113
  AC_CHECK_HEADER(sys/strpty.h,    AC_DEFINE(HAVE_STRPTY_H))
 +AC_CHECK_HEADER(pty.h,           AC_DEFINE(HAVE_PTY_H))
 +AC_CHECK_HEADER(libutil.h,       AC_DEFINE(HAVE_LIBUTIL_H))
- 
+
  AC_MSG_CHECKING([for sys/bsdtypes.h])
  if test "ISC_${ISC}" = "ISC_1"   ;    then
 --- a/exp_clib.c
@@ -25,7 +25,7 @@ https://sourceforge.net/tracker/?func=detail&aid=3071706&group_id=13179&atid=113
 +#ifdef HAVE_SYS_WAIT_H
 +#include <sys/wait.h>
 +#endif
- 
+
  #ifdef TIME_WITH_SYS_TIME
  # include <sys/time.h>
 --- a/exp_trap.c
@@ -35,13 +35,13 @@ https://sourceforge.net/tracker/?func=detail&aid=3071706&group_id=13179&atid=113
  #include <signal.h>
  #include <sys/types.h>
 +#include <string.h>
- 
+
  #ifdef HAVE_SYS_WAIT_H
  #include <sys/wait.h>
 --- a/pty_termios.c
 +++ b/pty_termios.c
 @@ -9,6 +9,14 @@
- 
+
  #include <stdio.h>
  #include <signal.h>
 +#include <string.h>
@@ -52,16 +52,16 @@ https://sourceforge.net/tracker/?func=detail&aid=3071706&group_id=13179&atid=113
 +#include <sys/types.h>
 +#include <libutil.h>
 +#endif
- 
+
  #if defined(SIGCLD) && !defined(SIGCHLD)
  #define SIGCHLD SIGCLD
 @@ -100,6 +100,7 @@
- 
+
  #include "exp_tty_in.h"
  #include "exp_rename.h"
 +#include "exp_int.h"
  #include "exp_pty.h"
- 
+
  void expDiagLog();
 --- a/exp_chan.c
 +++ b/exp_chan.c
@@ -72,21 +72,21 @@ https://sourceforge.net/tracker/?func=detail&aid=3071706&group_id=13179&atid=113
 +#include "exp_event.h"
  #include "exp_log.h"
  #include "tcldbg.h" /* Dbg_StdinMode */
- 
+
 --- a/exp_clib.c
 +++ b/exp_clib.c
 @@ -1955,6 +1955,7 @@
- 
+
  #include "expect.h"
  #include "exp_int.h"
 +EXTERN void		exp_init_tty _ANSI_ARGS_((void));
- 
+
  /* exp_glob.c - expect functions for doing glob
   *
 --- a/exp_tty.h
 +++ b/exp_tty.h
 @@ -17,6 +17,7 @@
- 
+
  void exp_tty_raw(int set);
  void exp_tty_echo(int set);
 +int exp_tty_cooked_echo(Tcl_Interp *interp, exp_tty *tty_old, int *was_raw, int *was_echo);

@@ -47,14 +47,14 @@ Signed-off-by: Sam James <sam@gentoo.org>
 +#include <sys/wait.h>
 +#include <unistd.h>
  int signal_rearms = 0;
- 
+
  RETSIGTYPE
 -child_sigint_handler(n)
 -int n;
 +child_sigint_handler(int n)
  {
  }
- 
+
  RETSIGTYPE
 -parent_sigint_handler(n)
 -int n;
@@ -62,12 +62,12 @@ Signed-off-by: Sam James <sam@gentoo.org>
  {
  signal_rearms++;
  }
- 
+
 -main()
 +int main(void)
  {
  	signal(SIGINT,parent_sigint_handler);
- 
+
 @@ -719,7 +718,8 @@ fi
  AC_MSG_CHECKING([for struct sgttyb])
  AC_TRY_RUN([
@@ -142,7 +142,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -2029,7 +2029,7 @@ AC_DEFUN([TEA_SERIAL_PORT], [
      AC_TRY_RUN([
  #include <termios.h>
- 
+
 -int main() {
 +int main(void) {
      struct termios t;
@@ -151,7 +151,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -2042,7 +2042,7 @@ int main() {
  	AC_TRY_RUN([
  #include <termio.h>
- 
+
 -int main() {
 +int main(void) {
      struct termio t;
@@ -160,7 +160,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -2055,7 +2055,7 @@ int main() {
  	AC_TRY_RUN([
  #include <sgtty.h>
- 
+
 -int main() {
 +int main(void) {
      struct sgttyb t;
@@ -169,7 +169,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -2070,7 +2070,7 @@ int main() {
  #include <termios.h>
  #include <errno.h>
- 
+
 -int main() {
 +int main(void) {
      struct termios t;
@@ -178,7 +178,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -2086,7 +2086,7 @@ int main() {
  #include <termio.h>
  #include <errno.h>
- 
+
 -int main() {
 +int main(void) {
      struct termio t;
@@ -187,7 +187,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -2101,7 +2101,7 @@ int main() {
  #include <sgtty.h>
  #include <errno.h>
- 
+
 -int main() {
 +int main(void) {
      struct sgttyb t;

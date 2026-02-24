@@ -16,7 +16,7 @@ Signed-off-by: Sam James <sam@gentoo.org>
 -fred () { }
 +int fred (void) { }
  EOM
- 
+
  cat > fred.c <<EOM
  #include <stdio.h>
 +#include <stdlib,h>
@@ -26,10 +26,10 @@ Signed-off-by: Sam James <sam@gentoo.org>
 @@ -76,9 +77,9 @@ cat > fred.c <<EOM
  #include <link.h>
  #endif
- 
+
 -extern int fred() ;
 +extern int fred(void) ;
- 
+
 -main()
 +int main(void)
  {

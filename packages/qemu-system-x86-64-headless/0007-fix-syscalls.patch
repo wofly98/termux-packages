@@ -7,19 +7,19 @@ diff -uNr qemu-8.2.0/linux-user/elfload.c qemu-8.2.0.mod/linux-user/elfload.c
      /* In order to use host shmat, we must be able to honor SHMLBA.  */
 -    uintptr_t align = MAX(SHMLBA, qemu_host_page_size);
 +    uintptr_t align = MAX(/* SHMLBA */ getpagesize(), qemu_host_page_size);
- 
+
      /* Sanity check the guest binary. */
      if (reserved_va) {
 diff -uNr qemu-8.2.0/linux-user/mmap.c qemu-8.2.0.mod/linux-user/mmap.c
 --- qemu-8.2.0/linux-user/mmap.c	2024-06-12 18:21:01.768575000 +0300
 +++ qemu-8.2.0.mod/linux-user/mmap.c	2024-06-12 18:21:30.340658216 +0300
 @@ -1097,7 +1097,7 @@
- 
+
              /* In order to use the host shmat, we need to honor host SHMLBA.  */
              mmap_start = mmap_find_vma(0, shm_info.shm_segsz,
 -                                       MAX(SHMLBA, shmlba));
 +                                       MAX(/* SHMLBA */ getpagesize(), shmlba));
- 
+
              if (mmap_start == -1) {
                  return -TARGET_ENOMEM;
 diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
@@ -36,7 +36,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
  #include <sys/sysinfo.h>
 @@ -85,12 +85,17 @@
  #endif
- 
+
  #define termios host_termios
 +#define termios2 host_termios2
 +#define ktermios host_ktermios
@@ -45,7 +45,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
  #define sgttyb host_sgttyb /* same as target */
  #define tchars host_tchars /* same as target */
  #define ltchars host_ltchars /* same as target */
- 
+
 +#undef __ASM_GENERIC_TERMBITS_H
 +#include <asm/termbits.h>
 +
@@ -55,7 +55,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 @@ -285,6 +290,59 @@
  #define __NR__llseek __NR_lseek
  #endif
- 
+
 +_syscall0(int, vhangup)
 +#ifdef __NR_msgctl
 +_syscall3(int, msgctl, int, msqid, int, cmd, struct msqid_ds *, buf)
@@ -124,17 +124,17 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
  safe_syscall6(ssize_t, copy_file_range, int, infd, loff_t *, pinoff,
 @@ -1247,7 +1308,7 @@
  #endif
- 
+
  #if defined(TARGET_NR_mq_open) && defined(__NR_mq_open)
 -#include <mqueue.h>
 +#include <linux/mqueue.h>
- 
+
  static inline abi_long copy_from_user_mq_attr(struct mq_attr *attr,
                                                abi_ulong target_mq_attr_addr)
 @@ -3800,6 +3861,8 @@
      return 0;
  }
- 
+
 +#define semid_ds __kernel_legacy_semid_ds
 +
  static inline abi_long target_to_host_semid_ds(struct semid_ds *host_sd,
@@ -143,7 +143,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 @@ -3879,6 +3942,16 @@
  	abi_ulong __buf;
  };
- 
+
 +#ifdef __NR_semctl
 +_syscall4(int, semctl, int, semid, int, semnum, int, cmd, union semun, arg4)
 +#else
@@ -165,7 +165,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 +            ret = get_errno(semctl(semid, semnum, cmd, (union semun) {.buf = NULL}));
              break;
      }
- 
+
 @@ -4144,7 +4217,7 @@
      host_md->msg_stime = tswapal(target_md->msg_stime);
      host_md->msg_rtime = tswapal(target_md->msg_rtime);
@@ -187,7 +187,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 @@ -5558,6 +5631,9 @@
      return get_errno(safe_ioctl(fd, ie->host_cmd, filter));
  }
- 
+
 +#undef winsize
 +#undef termio
 +
@@ -235,6 +235,6 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
          return ret;
  #endif
 +#endif
- 
+
  #ifdef CONFIG_SPLICE
  #ifdef TARGET_NR_tee

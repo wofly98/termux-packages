@@ -8,6 +8,6 @@ https://github.com/termux/termux-packages/issues/15908
          self.disabled_configure = []
 -        if '-j' in os.environ.get('MAKEFLAGS', ''):
 -            self.parallel = True
- 
+
      def add(self, ext):
          self.extensions.append(ext)

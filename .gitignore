@@ -40,3 +40,4 @@ checksum*
 
 # Temp .git directories for packages built from local sources "file://"
 /*.git
+/bootstrap*
