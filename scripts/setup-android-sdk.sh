@@ -33,6 +33,12 @@ if [ ! -d "$ANDROID_HOME" ]; then
 		$ANDROID_SDK_SHA256
 	rm -Rf android-sdk-$TERMUX_SDK_REVISION
 	unzip -q tools-$TERMUX_SDK_REVISION.zip -d android-sdk-$TERMUX_SDK_REVISION
+	# cmdline-tools must be inside cmdline-tools/latest
+	mkdir -p android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/latest
+	mv android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/bin android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/latest/
+	mv android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/lib android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/latest/
+	mv android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/source.properties android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/latest/ || true
+	mv android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/NOTICE.txt android-sdk-$TERMUX_SDK_REVISION/cmdline-tools/latest/ || true
 fi
 
 if [ ! -d "$NDK" ]; then
