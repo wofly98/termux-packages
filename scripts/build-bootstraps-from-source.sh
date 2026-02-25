@@ -8,9 +8,13 @@ set -e
 # Import properties to get TERMUX_APP_PACKAGE
 export TERMUX_SCRIPTDIR=$(realpath "$(dirname "$(realpath "$0")")/../")
 
-# Set Custom SDK/NDK Paths as verified
-export ANDROID_HOME="${ANDROID_HOME:-/mnt/d/newcompany/xpmall/termux/toolchain/android-sdk}"
-export NDK="${NDK:-/mnt/d/newcompany/xpmall/termux/toolchain/android-sdk/ndk/23.2.8568313}"
+# Set Custom SDK/NDK Paths if they exist locally
+if [ -z "${ANDROID_HOME:-}" ] && [ -d "/mnt/d/newcompany/xpmall/termux/toolchain/android-sdk" ]; then
+    export ANDROID_HOME="/mnt/d/newcompany/xpmall/termux/toolchain/android-sdk"
+fi
+if [ -z "${NDK:-}" ] && [ -d "/mnt/d/newcompany/xpmall/termux/toolchain/android-sdk/ndk/23.2.8568313" ]; then
+    export NDK="/mnt/d/newcompany/xpmall/termux/toolchain/android-sdk/ndk/23.2.8568313"
+fi
 export TERMUX_NDK_VERSION_NUM="${TERMUX_NDK_VERSION_NUM:-23}"
 export TERMUX_NDK_REVISION="${TERMUX_NDK_REVISION:-c}"
 export TERMUX_ANDROID_BUILD_TOOLS_VERSION="${TERMUX_ANDROID_BUILD_TOOLS_VERSION:-34.0.0}"

@@ -29,16 +29,12 @@ jobs:
           ./scripts/setup-ubuntu.sh
       - name: Set up Android SDK
         run: |
-          export ANDROID_HOME=/home/runner/android-sdk
-          export NDK=/home/runner/android-sdk/ndk/23.2.8568313
           export TERMUX_NDK_VERSION_NUM=23
           export TERMUX_NDK_REVISION=c
           export TERMUX_ANDROID_BUILD_TOOLS_VERSION=34.0.0
           ./scripts/setup-android-sdk.sh
       - name: Create bootstrap archive
         run: |
-          export ANDROID_HOME=/home/runner/android-sdk
-          export NDK=/home/runner/android-sdk/ndk/23.2.8568313
           export TERMUX_NDK_VERSION_NUM=23
           export TERMUX_NDK_REVISION=c
           export TERMUX_ANDROID_BUILD_TOOLS_VERSION=34.0.0
