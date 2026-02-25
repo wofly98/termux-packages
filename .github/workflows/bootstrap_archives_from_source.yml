@@ -22,8 +22,28 @@ jobs:
     steps:
       - name: Git clone
         uses: actions/checkout@v4
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq --no-install-recommends ninja-build zip binutils
+          ./scripts/setup-ubuntu.sh
+      - name: Set up Android SDK
+        run: |
+          export ANDROID_HOME=/home/runner/android-sdk
+          export NDK=/home/runner/android-sdk/ndk/23.2.8568313
+          export TERMUX_NDK_VERSION_NUM=23
+          export TERMUX_NDK_REVISION=c
+          export TERMUX_ANDROID_BUILD_TOOLS_VERSION=34.0.0
+          ./scripts/setup-android-sdk.sh
       - name: Create bootstrap archive
-        run: chmod +x *.sh; chmod +x ./scripts/*.sh; ./scripts/build-bootstraps-from-source.sh --architectures ${{ matrix.arch }}
+        run: |
+          export ANDROID_HOME=/home/runner/android-sdk
+          export NDK=/home/runner/android-sdk/ndk/23.2.8568313
+          export TERMUX_NDK_VERSION_NUM=23
+          export TERMUX_NDK_REVISION=c
+          export TERMUX_ANDROID_BUILD_TOOLS_VERSION=34.0.0
+          chmod +x *.sh; chmod +x ./scripts/*.sh
+          ./scripts/build-bootstraps-from-source.sh --architectures ${{ matrix.arch }}
       - name: Store artifacts
         uses: actions/upload-artifact@v4
         with:
