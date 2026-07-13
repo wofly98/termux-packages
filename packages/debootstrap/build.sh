@@ -3,11 +3,11 @@ TERMUX_PKG_DESCRIPTION="Bootstrap a basic Debian system"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="debian/copyright"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="1.0.140"
-TERMUX_PKG_SRCURL=https://deb.debian.org/debian/pool/main/d/debootstrap/debootstrap_${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=c95eb2aeb952b3fd09f4a07859115d40c4d04a8d551b3071b0a10fcd0db7ebc4
+TERMUX_PKG_VERSION="1.0.144"
+TERMUX_PKG_SRCURL="https://deb.debian.org/debian/pool/main/d/debootstrap/debootstrap_${TERMUX_PKG_VERSION}.tar.gz"
+TERMUX_PKG_SHA256=3e1bafd4bb813cf4d6c17a0adca449ca07603263a8ea40a67257d2d60c186f9a
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_DEPENDS="binutils | binutils-is-llvm, perl, proot, sed, wget"
+TERMUX_PKG_DEPENDS="llvm, perl, proot, sed, wget"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 

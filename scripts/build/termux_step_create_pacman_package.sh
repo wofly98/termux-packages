@@ -122,7 +122,12 @@ termux_step_create_pacman_package() {
 
 	# Write installation hooks.
 	termux_step_create_debscripts
+	termux_step_create_python_debscripts
 	termux_step_create_pacman_install_hook
+
+	# Create alternative files for pacman-alternatives.
+	# When compiling pacman packages, this function does not use debscripts or pacman hooks.
+	termux_step_create_alternatives
 
 	# ensure all elements of the package have the same mtime
 	find . -exec touch -h -d @$SOURCE_DATE_EPOCH {} +

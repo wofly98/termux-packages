@@ -3,33 +3,38 @@ TERMUX_PKG_DESCRIPTION="A compatibility layer for running Windows programs (Hang
 TERMUX_PKG_LICENSE="LGPL-2.1"
 TERMUX_PKG_LICENSE_FILE="LICENSE, LICENSE.OLD, COPYING.LIB"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=10.0
-TERMUX_PKG_REVISION=2
-_REAL_VERSION="${TERMUX_PKG_VERSION/\~/-}"
+TERMUX_PKG_VERSION="11.9"
 TERMUX_PKG_SRCURL=(
-	https://github.com/AndreRH/wine/archive/refs/tags/hangover-$_REAL_VERSION.tar.gz
-	https://github.com/AndreRH/hangover/releases/download/hangover-$_REAL_VERSION/hangover_${_REAL_VERSION}_ubuntu2004_focal_arm64.tar
+	"https://github.com/AndreRH/wine/archive/refs/tags/hangover-${TERMUX_PKG_VERSION/\~/-}.tar.gz"
+	"https://github.com/AndreRH/hangover/releases/download/hangover-${TERMUX_PKG_VERSION/\~/-}/hangover_${TERMUX_PKG_VERSION/\~/-}_ubuntu2204_jammy_arm64.tar"
 )
 TERMUX_PKG_SHA256=(
-	f2b61e494d8c04b2f85eb4979fbdc15de651bed6e895c1c61d54b416f405d0ee
-	c7cb7db11fad036d849b80a8fd6bf2dbae0d3c6b7eefb1bf77b1b7a284a7c913
+	1260e4a0a0b9c5915c3833046cdc5c779c34cad5770aeeb0c2cd3dc1ac3cb09d
+	0b30ff23ba61462d0c3f7df853d88b7ac764e813fd34d07f3568241e23e69739
 )
-TERMUX_PKG_DEPENDS="fontconfig, freetype, krb5, libandroid-spawn, libc++, libgmp, libgnutls, libxcb, libxcomposite, libxcursor, libxfixes, libxrender, mesa, opengl, pulseaudio, sdl2, vulkan-loader, xorg-xrandr"
-TERMUX_PKG_ANTI_BUILD_DEPENDS="vulkan-loader"
+TERMUX_PKG_DEPENDS="fontconfig, freetype, krb5, libandroid-spawn, libc++, libgmp, libgnutls, libxcb, libxcomposite, libxcursor, libxfixes, libxrender, opengl, pulseaudio, sdl2, vulkan-loader, xorg-xrandr"
 TERMUX_PKG_BUILD_DEPENDS="libandroid-spawn-static, vulkan-loader-generic"
+TERMUX_PKG_ANTI_BUILD_DEPENDS="vulkan-loader"
 TERMUX_PKG_NO_STATICSPLIT=true
+TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_PKG_UPDATE_TAG_TYPE="newest-tag"
+TERMUX_PKG_EXCLUDED_ARCHES="arm, i686, x86_64"
+
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_EXTRA_HOSTBUILD_CONFIGURE_ARGS="
 --without-x
 --disable-tests
 "
 
-TERMUX_PKG_BLACKLISTED_ARCHES="arm, i686, x86_64"
-
+# Disable userfaultfd syscall as it is missing on older Android, see #25015
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+ac_cv_header_linux_userfaultfd_h=no
+ac_cv_path_GRADLE=no
 enable_wineandroid_drv=no
+enable_tools=yes
 --prefix=$TERMUX_PREFIX/opt/hangover-wine
 --exec-prefix=$TERMUX_PREFIX/opt/hangover-wine
+--includedir=$TERMUX_PREFIX/opt/hangover-wine/include
 --libdir=$TERMUX_PREFIX/opt/hangover-wine/lib
 --with-wine-tools=$TERMUX_PKG_HOSTBUILD_DIR
 --enable-nls
@@ -39,6 +44,7 @@ enable_wineandroid_drv=no
 --without-coreaudio
 --without-cups
 --without-dbus
+--without-ffmpeg
 --with-fontconfig
 --with-freetype
 --without-gettext
@@ -52,9 +58,10 @@ enable_wineandroid_drv=no
 --without-netapi
 --without-opencl
 --with-opengl
---with-osmesa
+--without-osmesa
 --without-oss
 --without-pcap
+--without-pcsclite
 --with-pthread
 --with-pulse
 --without-sane
@@ -82,11 +89,11 @@ enable_wineandroid_drv=no
 
 _setup_llvm_mingw_toolchain() {
 	# LLVM-mingw's version number must not be the same as the NDK's.
-	local _llvm_mingw_version=19
-	local _version="20240929"
-	local _url="https://github.com/bylaws/llvm-mingw/releases/download/$_version/llvm-mingw-$_version-ucrt-ubuntu-20.04-x86_64.tar.xz"
+	local _llvm_mingw_version=21
+	local _version="20250319"
+	local _url="https://github.com/mstorsjo/llvm-mingw/releases/download/$_version/llvm-mingw-$_version-ucrt-ubuntu-20.04-x86_64.tar.xz"
 	local _path="$TERMUX_PKG_CACHEDIR/$(basename $_url)"
-	local _sha256sum=ce75ad076c87663fd4a77513e947252d97ce799a11926c1f3ac7afed1d6ab85c
+	local _sha256sum=ab2a1489416fa82b3e85e88cb877053ee8a591993408caf076737d8de5ae72ca
 	termux_download $_url $_path $_sha256sum
 	local _extract_path="$TERMUX_PKG_CACHEDIR/llvm-mingw-toolchain-$_llvm_mingw_version"
 	if [ ! -d "$_extract_path" ]; then
@@ -122,6 +129,9 @@ termux_step_pre_configure() {
 	LDFLAGS="${LDFLAGS/-Wl,-z,relro,-z,now/}"
 
 	LDFLAGS+=" -landroid-spawn"
+
+	# https://github.com/termux-user-repository/tur/commit/9388bf3599bba33d7bd052cab0679fe9cd5917d2#commitcomment-176464300
+	LDFLAGS+=" -Wl,--rosegment"
 }
 
 termux_step_make() {
@@ -143,21 +153,21 @@ EOF
 termux_step_post_make_install() {
 	# Install FEX-based dlls
 	local _type
-	for _type in wow64fex arm64ecfex; do
+	for _type in wowbox64 libwow64fex libarm64ecfex; do
 		mkdir -p $_type
 		cd $_type
-		ar -x "$TERMUX_PKG_SRCDIR"/hangover-lib${_type}_${_REAL_VERSION}_arm64.deb
+		ar -x "$TERMUX_PKG_SRCDIR"/hangover-${_type}_${TERMUX_PKG_VERSION/\~/-}_arm64.deb
 		tar xf data.tar.xz
-		install -Dm644 usr/lib/wine/aarch64-windows/lib$_type.dll \
-			"$TERMUX_PREFIX"/opt/hangover-wine/lib/wine/aarch64-windows/lib$_type.dll
-		install -Dm644 usr/share/doc/hangover-lib$_type/copyright \
-			"$TERMUX_PREFIX"/share/doc/hangover-lib$_type/copyright
+		install -Dm644 usr/lib/wine/aarch64-windows/$_type.dll \
+			"$TERMUX_PREFIX"/opt/hangover-wine/lib/wine/aarch64-windows/$_type.dll
+		install -Dm644 usr/share/doc/hangover-$_type/copyright \
+			"$TERMUX_PREFIX"/share/doc/hangover-$_type/copyright
 		cd -
 	done
 
 	# Install LICENSE file for hangover
 	mkdir -p "$TERMUX_PREFIX"/share/doc/hangover
 	rm -f "$TERMUX_PREFIX"/share/doc/hangover/copyright
-	curl -L https://raw.githubusercontent.com/AndreRH/hangover/refs/tags/hangover-${_REAL_VERSION}/LICENSE \
+	curl -L https://raw.githubusercontent.com/AndreRH/hangover/refs/tags/hangover-${TERMUX_PKG_VERSION/\~/-}/LICENSE \
 		-o "$TERMUX_PREFIX"/share/doc/hangover/copyright
 }

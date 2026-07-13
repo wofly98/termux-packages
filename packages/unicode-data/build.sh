@@ -3,14 +3,14 @@ TERMUX_PKG_DESCRIPTION="The Unicode Character Database (UCD)"
 TERMUX_PKG_LICENSE="custom"
 TERMUX_PKG_LICENSE_FILE="copyright.html"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="16.0.0"
+TERMUX_PKG_VERSION="18.0.0"
 TERMUX_PKG_SRCURL=(
-	https://unicode.org/Public/zipped/${TERMUX_PKG_VERSION}/UCD.zip
-	https://unicode.org/Public/zipped/${TERMUX_PKG_VERSION}/Unihan.zip
+	https://unicode.org/Public/${TERMUX_PKG_VERSION}/ucd/UCD.zip
+	https://unicode.org/Public/${TERMUX_PKG_VERSION}/ucd/Unihan.zip
 )
 TERMUX_PKG_SHA256=(
-	c86dd81f2b14a43b0cc064aa5f89aa7241386801e35c59c7984e579832634eb2
-	b8f000df69de7828d21326a2ffea462b04bc7560022989f7cc704f10521ef3e0
+	c961d4405edd144b5052cfaf8bf7db54af44ebc5db7181f83c6c52df99e9363a
+	835593ec1ca206486cdef6860a41930343ac014d7d61f7f7ef2b25084fadbdd4
 )
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 TERMUX_PKG_AUTO_UPDATE=true

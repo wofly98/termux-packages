@@ -1,11 +1,14 @@
 TERMUX_PKG_HOMEPAGE="https://github.com/sumneko/lua-language-server"
 TERMUX_PKG_DESCRIPTION="Sumneko Lua Language Server coded in Lua"
 TERMUX_PKG_LICENSE="MIT"
-TERMUX_PKG_MAINTAINER="Joshua Kahn @TomJo2000"
-TERMUX_PKG_VERSION="3.13.5"
+TERMUX_PKG_MAINTAINER="Joshua Kahn <tom@termux.dev>"
+TERMUX_PKG_VERSION="3.18.2"
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_GIT_BRANCH="${TERMUX_PKG_VERSION}"
 TERMUX_PKG_SRCURL="git+https://github.com/sumneko/lua-language-server"
-TERMUX_PKG_DEPENDS="libandroid-spawn, libc++"
+# `lua-language-server` links against libbfd,
+# remember to rebuild it when updating `binutils`.
+TERMUX_PKG_DEPENDS="binutils, libandroid-spawn, libc++"
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_AUTO_UPDATE=true
@@ -31,6 +34,8 @@ termux_step_host_build() {
 }
 
 termux_step_make() {
+	termux_setup_ninja
+
 	CFLAGS+=" -DBEE_ENABLE_FILESYSTEM"     # without this, it tries to link against its own filesystem lib and fails.
 	CFLAGS+=" -Wno-unknown-warning-option" # for -Wno-maybe-uninitialized argument.
 
@@ -38,6 +43,13 @@ termux_step_make() {
 		-e "s%\@FLAGS\@%${CFLAGS} ${CPPFLAGS}%g" \
 		-e "s%\@LDFLAGS\@%${LDFLAGS}%g" \
 		"${TERMUX_PKG_BUILDER_DIR}"/make.lua.diff | patch --silent -p1
+
+	patch="$TERMUX_PKG_BUILDER_DIR/force-cast-unw_context_t.diff"
+	echo "Applying patch: $(basename "$patch")"
+	test -f "$patch" && {
+		patch --silent -p1 -d "$TERMUX_PKG_SRCDIR/3rd/bee.lua/bee/crash/linux" < "$patch"
+		patch --silent -p1 -d "$TERMUX_PKG_SRCDIR/3rd/luamake/bee.lua/bee/crash/linux" < "$patch"
+	}
 
 	"${TERMUX_PKG_HOSTBUILD_DIR}"/3rd/luamake/luamake \
 		-cc "${CC}" \

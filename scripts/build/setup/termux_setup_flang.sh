@@ -19,20 +19,20 @@ termux_setup_flang() {
 	local __cache_dir="$TERMUX_COMMON_CACHEDIR"/flang-toolchain-cache
 	mkdir -p "$__cache_dir"
 
-	local __version="r27c"
-	local _flang_toolchain_version=0
+	local __version="r29-1"
+	local _flang_toolchain_version=1
 	local __sha256sums="
-775f362c758abe8d3173edc7be9ced3730ff14c64d44743017c3af7ceb0a6610  package-flang-aarch64.tar.bz2
-04fe24d67ee7eb5a4223299c610013585e75c56467e4b185ed929a3d17e3d077  package-flang-host.tar.bz2
-2061a0e3179f4afa55516ce3858582d25ea7b108ff762d9fb4ec8a03b49b36d2  package-flang-x86_64.tar.bz2
-d37dc6a58b495807f015c7fec08a57ff95d52ad0d0553cbf573b0215d8a1707c  package-install.tar.bz2
+0f681507bb17030fe763fc2e78b5540d6baf29d3efe5acbd5286bd964f70aec6  package-flang-aarch64.tar.bz2
+ecbc4819feebb457a528f77dab628201de03d53628a1d32295d91611d5f4053a  package-flang-host.tar.bz2
+b957bafa43b24b6a68a42ce3aac09f7be7987b8f0c732d7245f4602beb0df5dd  package-flang-x86_64.tar.bz2
+80e5dff0271cfb557d4925c50b459d54c615362df03d4bf29810c0857ae93762  package-install.tar.bz2
 	"
 	local __checksum
 	local __file
 	while read -r __checksum __file; do
 		if [ "$__checksum" == "" ]; then continue; fi
 		termux_download \
-			https://github.com/licy183/ndk-toolchain-clang-with-flang/releases/download/"$__version"/"$__file" \
+			https://github.com/termux/ndk-toolchain-clang-with-flang/releases/download/"$__version"/"$__file" \
 			"$__cache_dir/$__file" "$__checksum"
 	done <<< "$__sha256sums"
 
@@ -49,7 +49,7 @@ d37dc6a58b495807f015c7fec08a57ff95d52ad0d0553cbf573b0215d8a1707c  package-instal
 		local FLANG_FOLDER_TMP="$FLANG_FOLDER"-tmp
 		rm -rf "$FLANG_FOLDER_TMP"
 		mkdir -p "$FLANG_FOLDER_TMP"
-		cd "$FLANG_FOLDER_TMP"
+		pushd "$FLANG_FOLDER_TMP"
 		tar xf "$__cache_dir"/package-install.tar.bz2 --strip-components=4
 		tar xf "$__cache_dir"/package-flang-host.tar.bz2 --strip-components=1
 		cp -Rf $TERMUX_STANDALONE_TOOLCHAIN/sysroot $FLANG_FOLDER_TMP/
@@ -87,6 +87,7 @@ d37dc6a58b495807f015c7fec08a57ff95d52ad0d0553cbf573b0215d8a1707c  package-instal
 		cp $FLANG_FOLDER_TMP/bin/armv7a-linux-androideabi-flang-new \
 			$FLANG_FOLDER_TMP/bin/arm-linux-androideabi${TERMUX_PKG_API_LEVEL}-flang-new
 
+		popd # "$FLANG_FOLDER_TMP"
 		mv "$FLANG_FOLDER_TMP" "$FLANG_FOLDER"
 	fi
 

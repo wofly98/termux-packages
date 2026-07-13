@@ -3,17 +3,18 @@ TERMUX_PKG_DESCRIPTION="A high-performance, zero-overhead, extensible Python com
 TERMUX_PKG_LICENSE="Apache-2.0"
 TERMUX_PKG_LICENSE_FILE="LICENSE"
 TERMUX_PKG_MAINTAINER="@termux"
-_LLVM_COMMIT=c5a1d86495d28ab045258f120a8e2c9f3ef67a3b
-TERMUX_PKG_VERSION=0.18.1
+_LLVM_VERSION=20.1.7
+TERMUX_PKG_VERSION="0.19.6"
+TERMUx_PKG_REVISION=1
 TERMUX_PKG_SRCURL=(
 	https://github.com/exaloop/codon/archive/refs/tags/v$TERMUX_PKG_VERSION.tar.gz
 	https://github.com/exaloop/codon/releases/download/v$TERMUX_PKG_VERSION/codon-linux-x86_64.tar.gz
-	https://github.com/exaloop/llvm-project/archive/${_LLVM_COMMIT}.zip
+	https://github.com/exaloop/llvm-project/archive/refs/tags/codon-$_LLVM_VERSION.tar.gz
 )
 TERMUX_PKG_SHA256=(
-	597fd746aa278c74b194a47963f75f45670e694c69fa91a0a588c41ace018d02
-	bef8ffdfc3fb36b079f298881611315e1cfa953b81bb05d7ceb85d43840102c1
-	db37e218bb62b261f9debb4bb526a4abb37af8ac9a7973099c6d9a99a3e424c6
+	e33deefaf7ff3518c838db22d92b31f28cff4675a7ece70b79d5d31be1ce7420
+	38befce9eb87244698014b1fbe56a4102660120f1b82b3c7777c2a98c109770a
+	09df072c95628d9f59f67e0ad309bd3f4387f8cb06ae115f78c496c34f2c1e98
 )
 TERMUX_PKG_DEPENDS="libc++, libxml2, zlib, zstd"
 TERMUX_PKG_NO_STATICSPLIT=true
@@ -28,22 +29,23 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DPYTHON_EXECUTABLE=$(command -v python3)
 -DLLVM_ENABLE_PIC=ON
 -DLLVM_ENABLE_LIBEDIT=OFF
--DDEFAULT_SYSROOT=$(dirname $TERMUX_PREFIX)
 -DLLVM_LINK_LLVM_DYLIB=on
 -DLLVM_NATIVE_TOOL_DIR=$TERMUX_PKG_HOSTBUILD_DIR/llvm-build/bin
 -DCROSS_TOOLCHAIN_FLAGS_LLVM_NATIVE=-DLLVM_NATIVE_TOOL_DIR=$TERMUX_PKG_HOSTBUILD_DIR/llvm-build/bin
--DLIBOMP_ENABLE_SHARED=FALSE
+-DLIBOMP_ENABLE_SHARED=ON
 -DLLVM_ENABLE_SPHINX=ON
 -DSPHINX_OUTPUT_MAN=ON
 -DSPHINX_WARNINGS_AS_ERRORS=OFF
 -DPERL_EXECUTABLE=$(command -v perl)
--DLLVM_TARGETS_TO_BUILD=all
 -DLLVM_INSTALL_UTILS=OFF
 -DLLVM_INCLUDE_TESTS=OFF
+-DLLVM_ENABLE_TERMINFO=OFF
 -DLLVM_ENABLE_FFI=ON
 -DLLVM_ENABLE_RTTI=ON
 -DLLVM_ENABLE_ZLIB=OFF
--DLLVM_ENABLE_TERMINFO=OFF
+-DLLVM_ENABLE_ZSTD=OFF
+-DLLVM_TARGETS_TO_BUILD=all
+-DLLVM_ENABLE_PROJECTS=clang;openmp
 "
 TERMUX_PKG_FORCE_CMAKE=true
 
@@ -53,18 +55,21 @@ TERMUX_PKG_NO_OPENMP_CHECK=true
 # On ARM and i686, codon crashes:
 # JIT session error: Unsupported target machine architecture in ELF object codon-jitted-objectbuffer
 # Failure value returned from cantFail wrapped call
-TERMUX_PKG_BLACKLISTED_ARCHES="arm, i686"
+TERMUX_PKG_EXCLUDED_ARCHES="arm, i686"
 
 termux_step_post_get_source() {
-	# Check llvm commit
-	local _llvm_commit="$(strings codon-deploy/bin/codon | grep 'llvm-project' | cut -d' ' -f5 | cut -d')' -f1)"
-	if [ "$_LLVM_COMMIT" != "$_llvm_commit" ]; then
-		termux_error_exit "LLVM commit mismatch: current $_LLVM_COMMIT, expected $_llvm_commit."
+	# Check llvm version
+	local _llvm_version="$(strings codon-deploy-linux-x86_64/bin/codon | grep 'clang version' | cut -d' ' -f3)"
+	if [ "$_LLVM_VERSION" != "$_llvm_version" ]; then
+		termux_error_exit "LLVM version mismatch: current $_LLVM_VERSION, expected $_llvm_version."
 	fi
-	mv llvm-project-"$_llvm_commit" llvm-project
+	mv llvm-project-codon-"$_llvm_version" llvm-project
+}
 
-	mkdir -p patches
-	cp -f "$TERMUX_PKG_BUILDER_DIR"/openmp.diff patches/openmp.diff
+termux_step_pre_configure() {
+	# This can't be set in the global scope because $TERMUX_PREFIX
+	# is not set here during auto update checks here.
+	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -DDEFAULT_SYSROOT=$(dirname "$TERMUX_PREFIX")"
 }
 
 termux_step_host_build() {
@@ -74,9 +79,11 @@ termux_step_host_build() {
 	# Compile llvm host tools
 	mkdir -p llvm-build
 	cd llvm-build
-	cmake -G Ninja "-DCMAKE_BUILD_TYPE=Release" \
-					"$TERMUX_PKG_SRCDIR"/llvm-project/llvm
-	ninja -j $TERMUX_PKG_MAKE_PROCESSES llvm-tblgen llvm-min-tblgen
+	cmake -G Ninja \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DLLVM_ENABLE_PROJECTS=clang \
+		"$TERMUX_PKG_SRCDIR"/llvm-project/llvm
+	ninja -j $TERMUX_PKG_MAKE_PROCESSES llvm-tblgen llvm-min-tblgen clang-tblgen
 	cd -
 
 	# Compile peg2cpp
@@ -143,7 +150,6 @@ termux_step_configure() {
 
 	termux_setup_cmake
 	termux_setup_ninja
-	termux_setup_flang
 
 	export PATH="$TERMUX_PKG_HOSTBUILD_DIR/peg2cpp-build:$PATH"
 	local _RPATH_FLAG="-Wl,-rpath=$TERMUX_PREFIX/lib"
@@ -174,6 +180,6 @@ EOF
 }
 
 termux_step_post_massage() {
-	# Remove libfmt.a
-	rm -rf lib
+	# Remove some unrelated includes and libraries
+	rm -rf include lib
 }

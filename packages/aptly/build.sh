@@ -2,10 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://www.aptly.info
 TERMUX_PKG_DESCRIPTION="A Swiss Army knife for Debian repository management"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="1.6.0"
-TERMUX_PKG_REVISION=1
-TERMUX_PKG_SRCURL=https://github.com/aptly-dev/aptly/archive/v$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=4748d722f66859f24096f21c750f5d0961b906f81524ca3542dd1f206698f120
+TERMUX_PKG_VERSION="1.6.3"
+TERMUX_PKG_SRCURL=https://github.com/aptly-dev/aptly/archive/refs/tags/v$TERMUX_PKG_VERSION.tar.gz
+TERMUX_PKG_SHA256=689a0b4f110ab2528ae271c3884b92304e0fdf7a3bf4ee93f60705f4a27d4952
 TERMUX_PKG_AUTO_UPDATE=true
 
 termux_step_make() {

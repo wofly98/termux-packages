@@ -3,9 +3,9 @@ TERMUX_PKG_DESCRIPTION="Asynchronous API library for interfacing MPD in the C, C
 TERMUX_PKG_LICENSE="BSD 2-Clause, BSD 3-Clause"
 TERMUX_PKG_LICENSE_FILE="LICENSES/BSD-2-Clause.txt, LICENSES/BSD-3-Clause.txt"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="2.22"
-TERMUX_PKG_SRCURL=https://github.com/MusicPlayerDaemon/libmpdclient/archive/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=56bbae543a8a70db83b68c679b91990838f0db31a358c1a139774cd8ba7e3c59
+TERMUX_PKG_VERSION="2.26"
+TERMUX_PKG_SRCURL=https://github.com/MusicPlayerDaemon/libmpdclient/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=34508133de5df3d2674738d3b4ea5a8f263fc1ba9170dfabfdd16f40fe625d59
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_UPDATE_TAG_TYPE="newest-tag"
 TERMUX_PKG_BREAKS="libmpdclient-dev"
@@ -21,6 +21,6 @@ termux_step_post_massage() {
 	# after SOVERSION is changed.
 	local _GUARD_FILE="lib/libmpdclient.so.2"
 	if [ ! -e "${_GUARD_FILE}" ]; then
-		termux_error_exit "Error: file ${_GUARD_FILE} not found."
+		termux_error_exit "file ${_GUARD_FILE} not found."
 	fi
 }

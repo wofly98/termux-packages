@@ -3,6 +3,8 @@ termux_step_create_debian_package() {
 		# Metapackage doesn't have data inside.
 		rm -rf data
 	fi
+	# Clean up DEBIAN metadata directory from previous runs to prevent bundling it in data.tar.xz on continued builds.
+	rm -rf DEBIAN
 	tar --sort=name \
 		--mtime="@${SOURCE_DATE_EPOCH}" \
 		--owner=0 --group=0 --numeric-owner \
@@ -51,6 +53,10 @@ termux_step_create_debian_package() {
 	# XXX: Should be done in a better way without a function?
 	cd DEBIAN
 	termux_step_create_debscripts
+	# Process `update-alternatives` entries from `.alternatives` files
+	# These need to be merged into the `.postinst` and `.prerm` files, so after those are created.
+	termux_step_create_alternatives
+	termux_step_create_python_debscripts
 
 	# Create control.tar.xz
 	tar --sort=name \
@@ -62,7 +68,7 @@ termux_step_create_debian_package() {
 	TERMUX_PKG_DEBFILE=$TERMUX_OUTPUT_DIR/${TERMUX_PKG_NAME}${DEBUG}_${TERMUX_PKG_FULLVERSION}_${TERMUX_ARCH}.deb
 	# Create the actual .deb file:
 	${AR-ar} cr "$TERMUX_PKG_DEBFILE" \
-	       "$TERMUX_COMMON_CACHEDIR/debian-binary" \
-	       "$TERMUX_PKG_PACKAGEDIR/control.tar.xz" \
-	       "$TERMUX_PKG_PACKAGEDIR/data.tar.xz"
+		"$TERMUX_COMMON_CACHEDIR/debian-binary" \
+		"$TERMUX_PKG_PACKAGEDIR/control.tar.xz" \
+		"$TERMUX_PKG_PACKAGEDIR/data.tar.xz"
 }

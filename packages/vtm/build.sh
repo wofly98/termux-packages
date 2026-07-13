@@ -1,15 +1,15 @@
-TERMUX_PKG_HOMEPAGE=https://vtm.netxs.online/
+TERMUX_PKG_HOMEPAGE=https://github.com/directvt/vtm
 TERMUX_PKG_DESCRIPTION="Terminal multiplexer with TUI window manager and multi-party session sharing"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="LICENSE"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="0.9.99.61"
-TERMUX_PKG_SRCURL=https://github.com/netxs-group/vtm/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=3fde4995a092fffb02076e90d015bf9088c374ae1d5489f00ae5d13c1667c09b
-TERMUX_PKG_DEPENDS="libc++"
-TERMUX_PKG_BUILD_DEPENDS="libandroid-spawn"
-TERMUX_PKG_BUILD_IN_SRC=true
+TERMUX_PKG_VERSION="2026.07.11"
+TERMUX_PKG_SRCURL="https://github.com/directvt/vtm/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz"
+TERMUX_PKG_SHA256=2ee08a75abbb5cbd038bd133b247611f80f7b235701646240a0d9ea0cbba521b
+TERMUX_PKG_DEPENDS="freetype, harfbuzz, libc++, lua54, lunasvg"
+TERMUX_PKG_BUILD_DEPENDS="libandroid-spawn, stb"
 TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="-DSTB_INCLUDE_DIR=$TERMUX__PREFIX__INCLUDE_DIR/stb"
 
 termux_step_pre_configure() {
 	CXXFLAGS+=" -pthread"

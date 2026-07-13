@@ -25,6 +25,10 @@ PACKAGES+=" lzop"
 PACKAGES+=" lz4"
 PACKAGES+=" zstd"
 
+# userspace overlayfs implementation for rootless containers
+# Used to setup NDK toolchain without having to copy the whole toolchain to save some disk space
+PACKAGES+=" fuse-overlayfs"
+
 # Used by common build systems.
 PACKAGES+=" autoconf"
 PACKAGES+=" autogen"
@@ -68,7 +72,7 @@ PACKAGES+=" xmltoman"
 PACKAGES+=" python3-pip"
 PACKAGES+=" python3-setuptools"
 PACKAGES+=" python-wheel-common"
-PACKAGES+=" python3.12-venv"
+PACKAGES+=" python3.14-venv"
 
 # Needed by package bc.
 PACKAGES+=" ed"
@@ -107,14 +111,14 @@ PACKAGES+=" librsvg2-dev"
 # Needed by package news-flash-gtk.
 PACKAGES+=" libsqlite3-dev"
 
+# Needed by package luarocks.
+PACKAGES+=" lua5.4"
+
 # Needed by package fennel.
 PACKAGES+=" lua5.3"
 
 # Needed by package vlc.
 PACKAGES+=" lua5.2"
-
-# Needed by package luarocks.
-PACKAGES+=" lua5.1"
 
 # Used bt host build of package mariadb.
 PACKAGES+=" libncurses5-dev"
@@ -144,10 +148,7 @@ PACKAGES+=" php-xml"
 PACKAGES+=" composer"
 
 # Needed by package rust.
-PACKAGES+=" libssl-dev" # Needed to build Rust
-PACKAGES+=" llvm-18-dev"
-PACKAGES+=" llvm-18-tools"
-PACKAGES+=" clang-18"
+PACKAGES+=" libssl-dev"
 
 # Needed by librusty-v8
 PACKAGES+=" libclang-rt-17-dev"
@@ -219,14 +220,12 @@ PACKAGES+=" gtk-doc-tools"
 PACKAGES+=" happy"
 PACKAGES+=" itstool"
 PACKAGES+=" libdbus-glib-1-dev-bin"
-PACKAGES+=" libgdk-pixbuf2.0-dev"
-PACKAGES+=" libwayland-dev"
+PACKAGES+=" libgdk-pixbuf-xlib-2.0-dev"
 PACKAGES+=" python3-html5lib"
 PACKAGES+=" python3-xcbgen"
 PACKAGES+=" sassc"
 PACKAGES+=" texlive-extra-utils"
 PACKAGES+=" unifdef"
-PACKAGES+=" wayland-scanner++"
 PACKAGES+=" xfce4-dev-tools"
 PACKAGES+=" xfonts-utils"
 PACKAGES+=" xutils-dev"
@@ -239,6 +238,14 @@ PACKAGES+=" sqlite3"
 # Needed by packages in game repository
 PACKAGES+=" cvs"
 PACKAGES+=" python3-yaml"
+
+# Needed by blueprint-compiler (termux_setup_bpc)
+PACKAGES+=" python3-gi"
+PACKAGES+=" python3-gi-cairo"
+PACKAGES+=" gir1.2-gtk-4.0"
+
+# Needed by telegram-desktop
+PACKAGES+=" libgirepository1.0-dev"
 
 # Needed by gobject-introspection (termux_setup_gir).
 PACKAGES+=" bash-static"
@@ -267,9 +274,6 @@ PACKAGES+=" libxft-dev"
 PACKAGES+=" libxt-dev"
 PACKAGES+=" xbitmaps"
 
-# Needed by pypy
-PACKAGES+=" qemu-user-static"
-
 # Required by cava
 PACKAGES+=" xxd"
 
@@ -297,6 +301,14 @@ PACKAGES+=" libwebpmux3 libwebpmux3:i386"
 # Required by chromium-based packages
 PACKAGES+=" libfontconfig1"
 PACKAGES+=" libfontconfig1:i386"
+PACKAGES+=" libcups2-dev"
+PACKAGES+=" libglib2.0-0t64:i386"
+PACKAGES+=" libexpat1:i386"
+
+# Required by code-oss
+PACKAGES+=" libxkbfile-dev"
+PACKAGES+=" libsecret-1-dev"
+PACKAGES+=" libkrb5-dev"
 
 # Required by wine-stable
 PACKAGES+=" libfreetype-dev:i386"
@@ -310,11 +322,11 @@ PACKAGES+=" patchelf"
 # Needed by lldb for python integration
 PACKAGES+=" swig"
 
+# Needed by nchat
+PACKAGES+=" libmagic-dev"
+
 # Needed by binutils-cross
 PACKAGES+=" libzstd-dev"
-
-# Needed by tree-sitter-c
-PACKAGES+=" tree-sitter-cli"
 
 # Needed by wlroots
 PACKAGES+=" glslang-tools"
@@ -328,45 +340,69 @@ fi
 # Allow 32-bit packages.
 $SUDO dpkg --add-architecture i386
 
+# Install jq first, then source properties.sh
+$SUDO env DEBIAN_FRONTEND=noninteractive \
+	apt-get install -yq --no-install-recommends jq
+
+. $(dirname "$(realpath "$0")")/properties.sh
+
 # Add apt.llvm.org repo to get newer LLVM than Ubuntu provided
 $SUDO cp $(dirname "$(realpath "$0")")/llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 $SUDO chmod a+r /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 {
-	echo "deb [arch=amd64] http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main"
+	echo "deb [arch=amd64] http://apt.llvm.org/resolute/ llvm-toolchain-resolute-${TERMUX_HOST_LLVM_MAJOR_VERSION} main"
 } | $SUDO tee /etc/apt/sources.list.d/apt-llvm-org.list > /dev/null
+
+LLVM_PACKAGES=""
+
+# Needed by rust and other packages.
+LLVM_PACKAGES+=" llvm-${TERMUX_HOST_LLVM_MAJOR_VERSION}-dev"
+LLVM_PACKAGES+=" llvm-${TERMUX_HOST_LLVM_MAJOR_VERSION}-tools"
+LLVM_PACKAGES+=" clang-${TERMUX_HOST_LLVM_MAJOR_VERSION}"
+LLVM_PACKAGES+=" lld-${TERMUX_HOST_LLVM_MAJOR_VERSION}"
 
 $SUDO apt-get -yq update
 
 $SUDO env DEBIAN_FRONTEND=noninteractive \
-	apt-get install -yq --no-install-recommends $PACKAGES
+	apt-get install -yq --no-install-recommends $PACKAGES $LLVM_PACKAGES
 
 $SUDO locale-gen --purge en_US.UTF-8
 echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' | $SUDO tee -a /etc/default/locale
 
-. $(dirname "$(realpath "$0")")/properties.sh
-$SUDO mkdir -p $TERMUX_PREFIX
-$SUDO chown -R $(whoami) /data
-$SUDO ln -sf /data/data/com.termux/files/usr/opt/aosp /system
+# Ownership of `TERMUX__PREFIX` must be fixed before `TERMUX_APP__DATA_DIR`
+# if its under it, otherwise `TERMUX__ROOTFS` will not have its ownership fixed.
+$SUDO mkdir -p "$TERMUX__PREFIX"
+$SUDO chown -R "$(whoami)" "$TERMUX__PREFIX"
+$SUDO mkdir -p "$TERMUX_APP__DATA_DIR"
+$SUDO chown -R "$(whoami)" "${TERMUX_APP__DATA_DIR%"${TERMUX_APP__DATA_DIR#/*/}"}" # Get `/path/` from `/path/to/app__data_dir`.
 
-# Install newer pkg-config then what ubuntu provides, as the stock
-# ubuntu version has performance problems with at least protobuf:
-PKGCONF_VERSION=2.3.0
-HOST_TRIPLET=$(gcc -dumpmachine)
-PKG_CONFIG_DIRS=$(grep DefaultSearchPaths: /usr/share/pkgconfig/personality.d/${HOST_TRIPLET}.personality | cut -d ' ' -f 2)
-SYSTEM_LIBDIRS=$(grep SystemLibraryPaths: /usr/share/pkgconfig/personality.d/${HOST_TRIPLET}.personality | cut -d ' ' -f 2)
-mkdir -p /tmp/pkgconf-build
-cd /tmp/pkgconf-build
-curl -O https://distfiles.ariadne.space/pkgconf/pkgconf-${PKGCONF_VERSION}.tar.xz
-tar xf pkgconf-${PKGCONF_VERSION}.tar.xz
-cd pkgconf-${PKGCONF_VERSION}
-echo "SYSTEM_LIBDIRS: $SYSTEM_LIBDIRS"
-echo "PKG_CONFIG_DIRS: $PKG_CONFIG_DIRS"
-./configure --prefix=/usr \
-	--with-system-libdir=${SYSTEM_LIBDIRS} \
-	--with-pkg-config-dir=${PKG_CONFIG_DIRS}
-make
-$SUDO make install
-cd -
-rm -Rf /tmp/pkgconf-build
+# Initial symbolic link in the symbolic link chain for packages
+# that have a build dependency on 'aosp-libs'; see scripts/build/termux_step_override_config_scripts.sh
+# and scripts/build/setup/termux_setup_proot.sh for more information
+$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp" /system
+
+# Use GNU Coreutils as Rust coreutils has bugs which we are affected with.
+# Known problems with Rust coreutils:
+# comm: https://github.com/uutils/coreutils/issues/12972
+mkdir -p /tmp/build-essential-build
+pushd /tmp/build-essential-build
+$SUDO sed -i 's/^Types: deb$/Types: deb deb-src/g' /etc/apt/sources.list.d/ubuntu.sources
+$SUDO apt-get update
+$SUDO env DEBIAN_FRONTEND=noninteractive \
+	apt-get install -yq devscripts debhelper
+apt source build-essential
+sed -i 's/coreutils-from-uutils/coreutils-from-uutils | coreutils-from-gnu/g' \
+	build-essential-*/debian/control
+pushd build-essential-*
+debuild -b -uc -us
+popd # build-essential-*
+$SUDO env DEBIAN_FRONTEND=noninteractive \
+	apt-get reinstall -yq --allow-downgrades \
+	./build-essential_*.deb
+$SUDO env DEBIAN_FRONTEND=noninteractive \
+	apt-get remove -yq --autoremove --allow-remove-essential \
+	devscripts debhelper coreutils-from-uutils
+popd # /tmp/build-essential-build
+rm -Rf /tmp/build-essential-build
 # Prevent package from being upgraded and overwriting our manual installation:
-$SUDO apt-mark hold pkgconf
+$SUDO apt-mark hold build-essential
