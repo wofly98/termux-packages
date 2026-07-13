@@ -33,8 +33,10 @@ We reverted all hardcoded strings and environment values of `com.xpmall` back to
   - Restored package validation checks and build start logs.
 - [scripts/bootstrap/01-termux-bootstrap-second-stage-fallback.sh](file:///mnt/d/newcompany/termux/package/scripts/bootstrap/01-termux-bootstrap-second-stage-fallback.sh):
   - Restored path verification and script paths to `/data/data/com.termux`.
-- [scripts/generate-bootstraps.sh](file:///mnt/d/newcompany/termux/package/scripts/generate-bootstraps.sh) & [scripts/generate-bootstraps-custom.sh](file:///mnt/d/newcompany/termux/package/scripts/generate-bootstraps-custom.sh):
+- [scripts/generate-bootstraps.sh](file:///mnt/d/newcompany/termux/package/scripts/generate-bootstraps.sh):
   - Reverted documentation comments headers referring to `com.xpmall`.
+- **scripts/generate-bootstraps-custom.sh**:
+  - Identified as an unused and untracked duplicate script; permanently removed from the codebase to keep the project clean.
 
 ### 3. Specific Packages & Patches
 - **tergent**:
