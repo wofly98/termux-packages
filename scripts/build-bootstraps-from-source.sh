@@ -212,7 +212,7 @@ set +x
         rm -f "$deploy_dir"/*
     done
 
-    # Final Patching: Ensure com.xpmall is used everywhere
+    # Final Patching: Ensure com.termux is used everywhere
     if [ "${TERMUX_APP_PACKAGE}" != "com.termux" ]; then
         echo "[*] Ensuring paths point to ${TERMUX_APP_PACKAGE}..."
         grep -rl "com.termux" "$output_dir" | xargs -r perl -pi -e "s|com\.termux|${TERMUX_APP_PACKAGE}|g"
