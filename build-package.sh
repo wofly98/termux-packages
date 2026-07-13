@@ -486,15 +486,15 @@ while (($# >= 1)); do
 		-i)
 			if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ]; then
 				termux_error_exit "./build-package.sh: option '-i' is not available for on-device builds"
-			elif [ "$TERMUX_PREFIX" != "/data/data/com.xpmall/files/usr" ]; then
-				termux_error_exit "./build-package.sh: option '-i' is available only when TERMUX_APP_PACKAGE is 'com.xpmall'"
+			elif [ "$TERMUX_PREFIX" != "/data/data/com.termux/files/usr" ]; then
+				termux_error_exit "./build-package.sh: option '-i' is available only when TERMUX_APP_PACKAGE is 'com.termux'"
 			else
 				export TERMUX_INSTALL_DEPS=true
 			fi
 			;;
 		-I)
-			if [ "$TERMUX_PREFIX" != "/data/data/com.xpmall/files/usr" ]; then
-				termux_error_exit "./build-package.sh: option '-I' is available only when TERMUX_APP_PACKAGE is 'com.xpmall'"
+			if [ "$TERMUX_PREFIX" != "/data/data/com.termux/files/usr" ]; then
+				termux_error_exit "./build-package.sh: option '-I' is available only when TERMUX_APP_PACKAGE is 'com.termux'"
 			else
 				export TERMUX_INSTALL_DEPS=true
 				export TERMUX_NO_CLEAN=true

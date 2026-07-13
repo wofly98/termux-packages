@@ -150,12 +150,12 @@ build_package() {
 
 # 1. Update project-wide paths if not already done (Safety measure)
 # Though we did this globally, we ensure it here implicitly by relying on properties.sh
-if [ "$TERMUX_APP_PACKAGE" != "com.xpmall" ]; then
-    echo "Error: TERMUX_APP_PACKAGE is not set to com.xpmall in properties.sh"
+if [ "$TERMUX_APP_PACKAGE" != "com.termux" ]; then
+    echo "Error: TERMUX_APP_PACKAGE is not set to com.termux in properties.sh"
     exit 1
 fi
 
-echo "Starting build process for com.xpmall..."
+echo "Starting build process for com.termux..."
 echo "Target Architecture: aarch64"
 echo "Package List: ${BOOTSTRAP_PACKAGES[*]}"
 
